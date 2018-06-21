@@ -7,10 +7,10 @@ print(all_ips)
 input_ip.close()
 # make list of ip from file using regex
 ip_finder = re.compile(''' 
-		((\d{1,3}\.\d{1,3}\.\d{1,3})(.*)).*
-''',)  
-ips = ip_finder.search(all_ips)
-print(ips.group())
+		(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s*
+''',re.X)  
+ips = ip_finder.findall(all_ips)
+print(ips)
 # ping each request
 # on each request success ( create file if not exist give name as ping_success ) write ip into file 
 # on request failure ( create file if not exist give name as ping_failure ) write ip into file
