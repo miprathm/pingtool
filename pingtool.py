@@ -1,5 +1,6 @@
 import re
 import os
+import subprocess
 
 # take input.txt file as input
 input_ip = open('input.txt','r')
@@ -18,6 +19,9 @@ ping_fail = open(os.path.join('output','fail.txt'),'w')
 # make list of ip from file using regex
 ip_finder = re.compile(''' 
 		(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s*
+''',re.X)
+loss_finder = re.compile(''' 
+		(\d+)%\sloss
 ''',re.X)  
 ips = ip_finder.findall(all_ips)
 noOfIps = len(ips)
@@ -26,12 +30,12 @@ print("No of ips processing : "+str(noOfIps))
 for index in range(len(ips)):
 	hostname = ips[index] #example
 	print("Processing : "+str(index+1)+" / "+str(noOfIps)+"\n")
-	print("###################### Pinging : "+hostname+"######################")
-	response = os.system("ping " + hostname)
+	print("###################### Pinging : "+hostname+" ######################")
 	#and then check the response...
 	#print(" in python ",response)
 	"""
 	# following script gives false positive to "Destination host unreachable"
+	response = os.system("ping " + hostname)
 	if response == 0:
 		ping_success.write(hostname+'\n')
 		print(hostname+" is up ")
@@ -39,6 +43,17 @@ for index in range(len(ips)):
 		ping_fail.write(hostname+'\n')
 		print(hostname+" is down")
 	"""
+	output = str(subprocess.Popen(["ping.exe",hostname],stdout = subprocess.PIPE).communicate()[0])
+	loss = loss_finder.search(output)
+	#print(output)
+	if loss is not None:
+		total_loss = int((loss.group(1)))
+		if( total_loss > 0 or 'unreachable' in output ):
+			ping_fail.write(hostname+'\n')
+			print(hostname+" is down")
+		else:
+			ping_success.write(hostname+'\n')
+			print(hostname+" is up ")
 	print("############################################")
 
 # on each request success ( create file if not exist give name as ping_success ) write ip into file 
