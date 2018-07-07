@@ -30,12 +30,15 @@ for index in range(len(ips)):
 	response = os.system("ping " + hostname)
 	#and then check the response...
 	#print(" in python ",response)
+	"""
+	# following script gives false positive to "Destination host unreachable"
 	if response == 0:
 		ping_success.write(hostname+'\n')
 		print(hostname+" is up ")
 	else:
 		ping_fail.write(hostname+'\n')
 		print(hostname+" is down")
+	"""
 	print("############################################")
 
 # on each request success ( create file if not exist give name as ping_success ) write ip into file 
